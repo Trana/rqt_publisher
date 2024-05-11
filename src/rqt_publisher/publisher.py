@@ -34,7 +34,9 @@ import random
 import time
 import re
 
-from python_qt_binding.QtCore import Slot, QSignalMapper, QTimer, qWarning
+from functools import partial
+
+from python_qt_binding.QtCore import Slot, QTimer, qWarning
 
 from rclpy.exceptions import InvalidTopicNameException
 from rclpy.qos import QoSProfile
@@ -93,9 +95,6 @@ class Publisher(Plugin):
         self._publishers = {}
         self._id_counter = 0
 
-        self._timeout_mapper = QSignalMapper(self)
-        self._timeout_mapper.mapped[int].connect(self.publish_once)
-
         # add our self to the main window
         context.add_widget(self._widget)
 
@@ -145,8 +144,7 @@ class Publisher(Plugin):
 
         # add publisher info to _publishers dict and create signal mapping
         self._publishers[publisher_info['publisher_id']] = publisher_info
-        self._timeout_mapper.setMapping(publisher_info['timer'], publisher_info['publisher_id'])
-        publisher_info['timer'].timeout.connect(self._timeout_mapper.map)
+        publisher_info['timer'].timeout.connect(partial(self.publish_once, publisher_info['publisher_id']))
         if publisher_info['enabled'] and publisher_info['rate'] > 0:
             publisher_info['timer'].start(int(1000.0 / publisher_info['rate']))
         self._widget.publisher_tree_widget.model().add_publisher(publisher_info)

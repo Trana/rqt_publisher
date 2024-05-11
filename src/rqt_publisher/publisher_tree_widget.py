@@ -29,8 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from python_qt_binding.QtCore import Signal, Slot
-from python_qt_binding.QtGui import QIcon
-from python_qt_binding.QtWidgets import QAction
+from python_qt_binding.QtGui import QIcon, QAction
 
 from .publisher_tree_model import PublisherTreeModel
 from rqt_py_common.message_tree_widget import MessageTreeWidget
